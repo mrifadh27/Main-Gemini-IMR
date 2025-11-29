@@ -10,7 +10,7 @@ app.use(express.json());
 // --- Database Configuration ---
 const dbConfig = {
     host: 'localhost',
-    user: 'root',         // CHANGE THIS to your MySQL username
+    user: 'root',         
     password: 'root', // CHANGE THIS to your MySQL password
     database: 'UMS_DB'
 };
@@ -60,7 +60,7 @@ app.get('/api/initial-data', async (req, res) => {
 // --- POST: Add Customer ---
 app.post('/api/customers', async (req, res) => {
     const { name, address, phone } = req.body;
-    const id = `C${Date.now().toString().slice(-4)}`; // Generate ID like C4521
+    const id = `C${Date.now().toString().slice(-4)}`; 
 
     let connection;
     try {
@@ -73,6 +73,28 @@ app.post('/api/customers', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Error adding customer');
+    } finally {
+        if (connection) await connection.end();
+    }
+});
+
+// --- PUT: Update Customer (NEW) ---
+app.put('/api/customers/:id', async (req, res) => {
+    const { name, address, phone } = req.body;
+    const { id } = req.params;
+
+    let connection;
+    try {
+        connection = await mysql.createConnection(dbConfig);
+        // This SQL command updates the specific row in the database
+        await connection.execute(
+            'UPDATE Customers SET Name = ?, Address = ?, Phone = ? WHERE CustomerID = ?',
+            [name, address, phone, id]
+        );
+        res.json({ success: true, message: "Customer updated" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error updating customer');
     } finally {
         if (connection) await connection.end();
     }
@@ -101,12 +123,10 @@ app.post('/api/pay-bill', async (req, res) => {
     let connection;
     try {
         connection = await mysql.createConnection(dbConfig);
-        // 1. Add Payment
         await connection.execute(
             'INSERT INTO Payments (PaymentID, BillID, Amount, PaymentDate) VALUES (?, ?, ?, NOW())',
             [paymentId, billId, amount]
         );
-        // 2. Update Bill Status
         await connection.execute(
             "UPDATE Bills SET Status = 'Paid' WHERE BillID = ?",
             [billId]

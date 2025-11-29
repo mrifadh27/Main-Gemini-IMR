@@ -688,6 +688,7 @@ const DashboardLayout = ({ children, user, onLogout, currentView, onViewChange }
 
 export default function App() {
   const [user, setUser] = useState(null); 
+  // Initialize with EMPTY data
   const [db, setDb] = useState({ customers: [], meters: [], readings: [], bills: [], payments: [], tariffs: [] });
   const [notification, setNotification] = useState(null);
   const [currentView, setCurrentView] = useState('Overview');
@@ -697,8 +698,17 @@ export default function App() {
   const fetchData = () => {
     fetch('http://localhost:5000/api/initial-data')
       .then(res => res.json())
-      .then(setDb)
-      .catch(console.error);
+      .then(data => {
+        // Only use DB data if it exists, otherwise fallback to empty
+        if (data) {
+            setDb(data);
+            console.log("Data loaded from SQL Server:", data);
+        }
+      })
+      .catch(err => {
+          console.warn("Running in offline mode. Database connection failed:", err);
+          // We just stay with the initial empty state, so the app doesn't crash.
+      });
   };
 
   useEffect(() => {
@@ -746,14 +756,23 @@ export default function App() {
         showToast("Connection Error", "error");
       }
     },
-    updateCustomer: (updatedCustomer) => {
-      setDb(prev => ({
-        ...prev,
-        customers: prev.customers.map(c => c.id === updatedCustomer.id ? updatedCustomer : c)
-      }));
-      showToast("Customer details updated");
+    updateCustomer: async (updatedCustomer) => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/customers/${updatedCustomer.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedCustomer)
+        });
+        if (res.ok) {
+          fetchData(); // Reload from DB
+          showToast("Customer details updated");
+        } else {
+           showToast("Update failed", "error");
+        }
+      } catch (e) { console.error(e); }
     },
     updateTariff: (updatedTariff) => {
+      // Update local state for demo, would be API call in real app
       setDb(prev => ({
         ...prev,
         tariffs: prev.tariffs.map(t => t.id === updatedTariff.id ? updatedTariff : t)
@@ -774,6 +793,7 @@ export default function App() {
       } catch(e) { console.error(e); }
     },
     removeMeter: (meterId) => {
+      // Local state update for demo
       setDb(prev => ({
         ...prev,
         meters: prev.meters.filter(m => m.id !== meterId),
