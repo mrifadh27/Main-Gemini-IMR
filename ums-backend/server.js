@@ -11,7 +11,7 @@ app.use(express.json());
 const dbConfig = {
     host: 'localhost',
     user: 'root',         
-    password: 'root', // CHANGE THIS to your MySQL password
+    password: 'root', //password
     database: 'UMS_DB'
 };
 
