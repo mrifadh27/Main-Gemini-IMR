@@ -1,50 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Advanced Global Styles & Animation Utilities 
-  This ensures your Parallax Background and 3D Card effects work perfectly.
-*/
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  /* Default background as fallback */
-  background-color: #0f172a; 
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
 }
 
-/* --- Custom Animation Keyframes --- */
+/* ==========================================================================
+   CUSTOM SCROLLBAR
+   ========================================================================== */
 
-/* Floating Animation for Utility Icons (Zap, Droplets, Flame) */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Pulse Glow for Status Indicators */
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Slide In Animation for Dashboard Cards */
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(20px);
   }
   to {
     opacity: 1;
@@ -52,50 +89,214 @@ body {
   }
 }
 
-/* --- Utility Classes --- */
-
-/* Apply smooth transitions to all interactive elements */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Custom Scrollbar for Tables */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f5f9; 
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1; 
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; 
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
 }
 
-/* Glassmorphism Utilities */
-.backdrop-blur-md {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-/* Ensure Tables look professional */
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.4s ease-out;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Tailwind animate-in utilities */
+@layer utilities {
+  .animate-in {
+    animation-duration: 150ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+  }
+  
+  .fade-in {
+    animation-name: fadeIn;
+  }
+  
+  .zoom-in-95 {
+    animation-name: scaleIn;
+  }
+  
+  .slide-in-from-right {
+    animation-name: slideInRight;
+  }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+/* Glass Effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card Hover Effect */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button Press Effect */
+.btn-press {
+  transition: transform 0.1s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================================
+   TABLE STYLES
+   ========================================================================== */
+
 table {
   border-collapse: separate;
   border-spacing: 0;
 }
-th {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
+
+tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 0.75rem;
 }
 
-/* Fix for potential text-rendering issues on some monitors */
-.antialiased {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 0.75rem;
+}
+
+/* ==========================================================================
+   FORM STYLES
+   ========================================================================== */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Focus ring */
+.focus-ring {
+  @apply focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all;
+}
+
+/* ==========================================================================
+   CHART STYLES
+   ========================================================================== */
+
+.recharts-tooltip-wrapper {
+  z-index: 1000 !important;
+}
+
+.recharts-default-tooltip {
+  background: white !important;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  padding: 12px 16px !important;
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE UTILITIES
+   ========================================================================== */
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* ==========================================================================
+   SELECTION STYLES
+   ========================================================================== */
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: inherit;
 }
